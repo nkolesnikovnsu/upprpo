@@ -9,7 +9,7 @@ import {
   InputGroup,
   FormControl,
   Button,
-  Alert,
+  Alert, ButtonGroup,
 } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,8 +17,10 @@ import {
   faStepBackward,
   faFastBackward,
   faStepForward,
-  faFastForward,
+  faFastForward, faEdit, faTrash,
 } from "@fortawesome/free-solid-svg-icons";
+import {Link} from "react-router-dom";
+import axios from "axios";
 
 class UserList extends Component {
   constructor(props) {
@@ -105,7 +107,7 @@ class UserList extends Component {
                     <td>Email</td>
                     <td>Address</td>
                     <td>Created</td>
-                    <td>Balance</td>
+                    <td>Actions</td>
                   </tr>
                 </thead>
                 <tbody>
@@ -122,7 +124,18 @@ class UserList extends Component {
                         <td>{user.email}</td>
                         <td>{user.address}</td>
                         <td>{user.created}</td>
-                        <td>{user.balance}</td>
+                        <td>
+                          <ButtonGroup>
+                            <Button
+                                size="sm"
+                                variant="outline-danger"
+                                onClick={() => this.deleteUser(user.id)}
+                            >
+                              <FontAwesomeIcon icon={faTrash} />
+                            </Button>
+                          </ButtonGroup>
+                        </td>
+                        {/*<td>{user.balance}</td>*/}
                       </tr>
                     ))
                   )}
@@ -187,6 +200,46 @@ class UserList extends Component {
       </div>
     );
   }
+
+  findAllUsers(currentPage) {
+    currentPage -= 1;
+    axios
+        .get(
+            "http://localhost:8081/rest/users?pageNumber=" +
+            currentPage +
+            "&pageSize=" +
+            this.state.usersPerPage +
+            "&sortBy=price&sortDir=" +
+            this.state.sortDir
+        )
+        .then((response) => response.data)
+        .then((data) => {
+          this.setState({
+            books: data.content,
+            totalPages: data.totalPages,
+            totalElements: data.totalElements,
+            currentPage: data.number + 1,
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          localStorage.removeItem("jwtToken");
+          this.props.history.push("/");
+        });
+  }
+
+  deleteUser = (userId) => {
+    this.props.deleteBook(userId);
+    setTimeout(() => {
+      if (this.props.userObject != null) {
+        this.setState({ show: true });
+        setTimeout(() => this.setState({ show: false }), 3000);
+        this.findAllBooks(this.state.currentPage);
+      } else {
+        this.setState({ show: false });
+      }
+    }, 1000);
+  };
 }
 
 const mapStateToProps = (state) => {

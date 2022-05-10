@@ -57,13 +57,13 @@ public class Application implements CommandLineRunner {
 			for (int i = 1; i <= 1000; i++) {
 				Book book = new Book();
 				book.setTitle("Огурец зеленый" + i);
-				book.setAuthor("Овощь" + i);
+				book.setAuthor("Magnit");
 				book.setCoverPhotoURL(
 						"https://images-na.ssl-images-amazon.com/images/I/417zLTa1uqL._SX397_BO1,204,203,200_.jpg");
 				book.setIsbnNumber(2776.00);
 				book.setPrice(2776.00 + i);
-				book.setLanguage("English");
-				book.setGenre("Technology");
+				book.setLanguage("06.05.2022");
+				book.setGenre("10.04.2023");
 				bookService.saveOrUpdate(book);
 			}
 		}
